@@ -40,12 +40,12 @@ GYRO_CTRL5_C  = micropython.const (0X14)
 #define LSM6DS3_ACC_GYRO_STATUS_REG  			0X1E
 #define LSM6DS3_ACC_GYRO_OUT_TEMP_L  			0X20
 #define LSM6DS3_ACC_GYRO_OUT_TEMP_H  			0X21
-#define LSM6DS3_ACC_GYRO_OUTX_L_G  			0X22
-#define LSM6DS3_ACC_GYRO_OUTX_H_G  			0X23
-#define LSM6DS3_ACC_GYRO_OUTY_L_G  			0X24
-#define LSM6DS3_ACC_GYRO_OUTY_H_G  			0X25
-#define LSM6DS3_ACC_GYRO_OUTZ_L_G  			0X26
-#define LSM6DS3_ACC_GYRO_OUTZ_H_G  			0X27
+OUTX_L_G  = micropython.const (	0X22)
+OUTX_H_G  = micropython.const (	0X23)
+OUTY_L_G  = micropython.const (	0X24)
+OUTY_H_G  = micropython.const (	0X25)
+OUTZ_L_G  = micropython.const (	0X26)
+OUTZ_H_G  = micropython.const (	0X27)
 OUTX_L_XL = micropython.const (0X28)
 OUTX_H_XL = micropython.const (	0X29)
 OUTY_L_XL = micropython.const (0X2A)
@@ -148,10 +148,9 @@ class Acc:
             
         self.i2c.mem_write(0x47, address,CTRL1_XL)
         self.i2c.mem_write(0x80, address,CTRL4_C )
+        self.i2c.mem_write(0x4C, address,CTRL2_G )
             
-            
-            
-            
+        ## Accelerations
             
     def get_ax_int (self):
         """ Get the X acceleration from the accelerometer in A/D bits and 
@@ -206,6 +205,8 @@ class Acc:
         @return The measured Z acceleration in g's """
 
         return self.get_az_int()/2040
+    
+    
 
 
     def get_accels (self):
@@ -215,4 +216,60 @@ class Acc:
 
         return (self.get_ax (), self.get_ay (), self.get_az ())
         
+    
+    ## Gyro
+    
+    def get_gx_int (self):
+        """ Get the X angular acceleration from the accelerometer in A/D bits and 
+        return it.
+        @return The measured X acceleration in A/D conversion bits """
+
+        byte_array = self.i2c.mem_read(2, self.addr, OUTX_L_G)        
+        result = struct.unpack('<h', byte_array)
+        return result[0]
+    
+    def get_gy_int (self):
+        """ Get the Y acceleration from the accelerometer in A/D bits and 
+        return it.
+        @return The measured Y acceleration in A/D conversion bits """
+
+        byte_array = self.i2c.mem_read(2, self.addr, OUTY_L_G)        
+        result = struct.unpack('<h', byte_array)
+        return result[0]
+
+
+    def get_gz_int (self):
+        """ Get the Z acceleration from the accelerometer in A/D bits and 
+        return it.
+        @return The measured Z acceleration in A/D conversion bits """
+
+        byte_array = self.i2c.mem_read(2, self.addr, OUTZ_L_G)        
+        result = struct.unpack('<h', byte_array)
+        return result[0]
+
+
+    def get_gx (self):
+        """ Get the X acceleration from the accelerometer in g's, assuming
+        that the accelerometer was correctly calibrated at the factory.
+        @return The measured X acceleration in g's """
+
+        return self.get_ax_int()/2035
+
+
+    def get_gy (self):
+        """ Get the Y acceleration from the accelerometer in g's, assuming
+        that the accelerometer was correctly calibrated at the factory. The
+        measurement is adjusted for the range (2g, 4g, or 8g) setting.
+        @return The measured Y acceleration in g's """
+
+        return self.get_ay_int()/2030
+
+
+    def get_gz (self):
+        """ Get the Z acceleration from the accelerometer in g's, assuming
+        that the accelerometer was correctly calibrated at the factory. The
+        measurement is adjusted for the range (2g, 4g, or 8g) setting.
+        @return The measured Z acceleration in g's """
+
+        return self.get_az_int()/2040
         
