@@ -153,7 +153,7 @@ class Acc:
             
             
             
-    def get_ax_bits (self):
+    def get_ax_int (self):
         """ Get the X acceleration from the accelerometer in A/D bits and 
         return it.
         @return The measured X acceleration in A/D conversion bits """
@@ -162,7 +162,7 @@ class Acc:
         result = struct.unpack('<h', byte_array)
         return result[0]
     
-    def get_ay_bits (self):
+    def get_ay_int (self):
         """ Get the Y acceleration from the accelerometer in A/D bits and 
         return it.
         @return The measured Y acceleration in A/D conversion bits """
@@ -172,7 +172,7 @@ class Acc:
         return result[0]
 
 
-    def get_az_bits (self):
+    def get_az_int (self):
         """ Get the Z acceleration from the accelerometer in A/D bits and 
         return it.
         @return The measured Z acceleration in A/D conversion bits """
@@ -187,8 +187,7 @@ class Acc:
         that the accelerometer was correctly calibrated at the factory.
         @return The measured X acceleration in g's """
 
-        print ('MMA845x uncalibrated X')
-        return 0
+        return self.get_ax_int()/2035
 
 
     def get_ay (self):
@@ -197,8 +196,7 @@ class Acc:
         measurement is adjusted for the range (2g, 4g, or 8g) setting.
         @return The measured Y acceleration in g's """
 
-        print ('MMA845x uncalibrated Y')
-        return 0
+        return self.get_ay_int()/2030
 
 
     def get_az (self):
@@ -207,8 +205,7 @@ class Acc:
         measurement is adjusted for the range (2g, 4g, or 8g) setting.
         @return The measured Z acceleration in g's """
 
-        print ('MMA845x uncalibrated Z')
-        return 0
+        return self.get_az_int()/2040
 
 
     def get_accels (self):

@@ -28,12 +28,23 @@ queue = task_share.Queue('f', 1000)
 adc = pyb.ADC(pinC0)
 pinC1 = pyb.Pin (pyb.Pin.board.PC1, pyb.Pin.OUT_PP)
 
+
+def clear():
+    print("\x1B\x5B2J", end="")
+    print("\x1B\x5BH", end="")
+
 def main():
     aye = pyb.I2C(1, pyb.I2C.MASTER)
     test = acc.Acc (aye, 107)
-    print('Hello')
     while True:
-        print(test.get_ax_bits())
+        print("X acceleration raw: ", test.get_ax_int())
+        print("Y acceletation raw: ", test.get_ay_int())
+        print("Z acceletation raw: ", test.get_az_int())
+        print("X acceleration: " + str(test.get_ax()) + " g")
+        print("Y acceletation: " + str(test.get_ay()) + " g")
+        print("Z acceletation: " + str(test.get_az()) + " g")
+        utime.sleep_ms(500)
+        clear()
 
 # =============================================================================
 
