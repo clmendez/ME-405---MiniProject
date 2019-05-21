@@ -8,6 +8,11 @@ Created on Mon May 20 20:30:58 2019
 import micropython
 import struct
 
+import smbus
+import math
+import time
+
+
 
 TEST_PAGE  = micropython.const (0x00)
 RAM_ACCESS = micropython.const (0x01)
@@ -33,8 +38,8 @@ GYRO_CTRL5_C  = micropython.const (0X14)
 #define LSM6DS3_ACC_GYRO_CTRL8_XL  			0X17
 #define LSM6DS3_ACC_GYRO_CTRL9_XL  			0X18
 #define LSM6DS3_ACC_GYRO_CTRL10_C  			0X19
-#define LSM6DS3_ACC_GYRO_MASTER_CONFIG  		0X1A
-#define LSM6DS3_ACC_GYRO_WAKE_UP_SRC  			0X1B
+#define LSM6DS3_ACC_GYRO_MASTER_CONFIG  	0X1A
+#define LSM6DS3_ACC_GYRO_WAKE_UP_SRC  		0X1B
 #define LSM6DS3_ACC_GYRO_TAP_SRC  			0X1C
 #define LSM6DS3_ACC_GYRO_D6D_SRC  			0X1D
 #define LSM6DS3_ACC_GYRO_STATUS_REG  			0X1E
@@ -46,6 +51,7 @@ OUTY_L_G  = micropython.const (	0X24)
 OUTY_H_G  = micropython.const (	0X25)
 OUTZ_L_G  = micropython.const (	0X26)
 OUTZ_H_G  = micropython.const (	0X27)
+
 OUTX_L_XL = micropython.const (0X28)
 OUTX_H_XL = micropython.const (	0X29)
 OUTY_L_XL = micropython.const (0X2A)
@@ -272,4 +278,104 @@ class Acc:
         @return The measured Z acceleration in g's """
 
         return self.get_az_int()/2040
+    
+    
+    
+    
+    
+    def get_y_rotation(x,y,z):
+        radians = math.atan2(x, dist(y,z))
+        return -math.degrees(radians)
+
+    def get_x_rotation(x,y,z):
+        radians = math.atan2(y, dist(x,z))
+        return math.degrees(radians)
+ 
+bus = smbus.SMBus(0)  # or bus = smbus.SMBus(1) for Revision 2 boards
+
+bus.write_byte_data(address, power_mgmt_1, 0)
+52
+ 
+53
+now = time.time()
+54
+ 
+55
+K = 0.98
+56
+K1 = 1 - K
+57
+ 
+58
+time_diff = 0.01
+59
+ 
+60
+(gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = read_all()
+61
+ 
+62
+last_x = get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+63
+last_y = get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+64
+ 
+65
+gyro_offset_x = gyro_scaled_x
+66
+gyro_offset_y = gyro_scaled_y
+67
+ 
+68
+gyro_total_x = (last_x) - gyro_offset_x
+69
+gyro_total_y = (last_y) - gyro_offset_y
+70
+ 
+71
+print "{0:.4f} {1:.2f} {2:.2f} {3:.2f} {4:.2f} {5:.2f} {6:.2f}".format( time.time() - now, (last_x), gyro_total_x, (last_x), (last_y), gyro_total_y, (last_y))
+72
+ 
+73
+for i in range(0, int(3.0 / time_diff)):
+74
+    time.sleep(time_diff - 0.005)
+75
+     
+76
+    (gyro_scaled_x, gyro_scaled_y, gyro_scaled_z, accel_scaled_x, accel_scaled_y, accel_scaled_z) = read_all()
+77
+     
+78
+    gyro_scaled_x -= gyro_offset_x
+79
+    gyro_scaled_y -= gyro_offset_y
+80
+     
+81
+    gyro_x_delta = (gyro_scaled_x * time_diff)
+82
+    gyro_y_delta = (gyro_scaled_y * time_diff)
+83
+ 
+84
+    gyro_total_x += gyro_x_delta
+85
+    gyro_total_y += gyro_y_delta
+86
+ 
+87
+    rotation_x = get_x_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+88
+    rotation_y = get_y_rotation(accel_scaled_x, accel_scaled_y, accel_scaled_z)
+89
+ 
+90
+    last_x = K * (last_x + gyro_x_delta) + (K1 * rotation_x)
+91
+    last_y = K * (last_y + gyro_y_delta) + (K1 * rotation_y)
+92
+     
+93
+    print "{0:.4f} {1:.2f} {2:.2f} {3:.2f} {4:.2f} {5:.2f} {6:.2f}".format( time.time() - now, (rotation_x), (gyro_total_x), (last_x), (rotation_y), (gyro_total_y), (last_y))
         
