@@ -169,7 +169,7 @@ class Acc:
 
         byte_array = self.i2c.mem_read(2, self.addr, OUTY_L_XL)        
         result = struct.unpack('<h', byte_array)
-        return result
+        return result[0]
 
 
     def get_az_bits (self):
@@ -179,7 +179,7 @@ class Acc:
 
         byte_array = self.i2c.mem_read(2, self.addr, OUTZ_L_XL)        
         result = struct.unpack('<h', byte_array)
-        return result
+        return result[0]
 
 
     def get_ax (self):
