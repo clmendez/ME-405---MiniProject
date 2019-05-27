@@ -17,6 +17,7 @@ import encoder
 import motor
 import time
 import utime
+import filter1
 import acc
 
 # Allocate memory so that exceptions raised in interrupt service routines can
@@ -36,15 +37,23 @@ def clear():
 def main():
     aye = pyb.I2C(1, pyb.I2C.MASTER)
     test = acc.Acc (aye, 107)
+    filter0 = filter1.Filter(test, .98)
     while True:
+        x_theta = filter0.updated_x()
+        y_theta = filter0.updated_y()
         print("X acceleration raw: ", test.get_ax_int())
         print("Y acceletation raw: ", test.get_ay_int())
         print("Z acceletation raw: ", test.get_az_int())
         print("X acceleration: " + str(test.get_ax()) + " g")
         print("Y acceletation: " + str(test.get_ay()) + " g")
         print("Z acceletation: " + str(test.get_az()) + " g")
+        print("updated x: " + str(x_theta))
+        print("updated y: " + str(y_theta))
         utime.sleep_ms(500)
+        
         clear()
+        
+        
 
 # =============================================================================
 
