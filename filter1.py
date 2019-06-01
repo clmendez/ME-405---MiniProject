@@ -21,12 +21,12 @@ class Filter:
         self.K = K
         self.K1 = 1 - self.K
         self.time_diff = 0.01
-        self.gyro_x = acc.get_gx()
-        self.gyro_y = acc.get_gy()
-        self.gyro_z = acc.get_gz()
-        self.acc_x = acc.get_ax()
-        self.acc_y = acc.get_ay()
-        self.acc_z = acc.get_az()
+        self.gyro_x = acc.get_gx_int()
+        self.gyro_y = acc.get_gy_int()
+        self.gyro_z = acc.get_gz_int()
+        self.acc_x = acc.get_ax_int()
+        self.acc_y = acc.get_ay_int()
+        self.acc_z = acc.get_az_int()
         self.gyro_offset_x = self.gyro_x
         self.gyro_offset_y = self.gyro_y
         self.gyro_offset_z = self.gyro_z
@@ -52,29 +52,20 @@ class Filter:
     def sleep (self):
         return self.time.sleep(self.time_diff - 0.005)
     
-    def all_measurements (self):
-        return print("Acc x: " + str(self.acc.get_ax()) +
-                     "Acc y: " + str(self.acc.get_ay()) +
-                     "Acc z: " + str(self.acc.get_az()) +
-                     "Gyro x: " + str(self.acc.get_gx()) +
-                     "Gyro y: " + str(self.acc.get_gy()) +
-                     "Gyro z: " + str(self.acc.get_gz()))
-        
-        
     def updated_x(self):
-        gyro_scaled = self.acc.get_gx() - self.gyro_offset_x 
+        gyro_scaled = self.acc.get_gx_int() - self.gyro_offset_x 
         gyro_delta = gyro_scaled * self.time_diff
         self.gyro_total_x += gyro_delta
-        rotation = self.get_x_rotation(self.acc.get_ax(), self.acc.get_ay(), self.acc.get_az())
-        result  = self.K * ( self.last_x - gyro_delta) + (self.K1 * rotation)
+        rotation = self.get_x_rotation(self.acc.get_ax_int(), self.acc.get_ay_int(), self.acc.get_az_int())
+        result  = self.K1 * ( self.last_x + gyro_delta) + (self.K * rotation)
         return result
 
     def updated_y(self):
-        gyro_scaled = self.acc.get_gy() - self.gyro_offset_y
+        gyro_scaled = self.acc.get_gy_int() - self.gyro_offset_y
         gyro_delta = gyro_scaled * self.time_diff
         self.gyro_total_y += gyro_delta
-        rotation = self.get_y_rotation(self.acc.get_ax(), self.acc.get_ay(), self.acc.get_az())
-        result  = self.K * ( self.last_y - gyro_delta) + (self.K1 * rotation)
+        rotation = self.get_y_rotation(self.acc.get_ax_int(), self.acc.get_ay_int(), self.acc.get_az_int())
+        result  = self.K1 * ( self.last_y + gyro_delta) + (self.K * rotation)
         return result
     
    
