@@ -13,6 +13,9 @@ class MotorDriver:
 
         print ('Creating a motor driver')
         
+        self._DEAD_ZONE = 0
+        
+        
         ## pinB4 Motor Controller forward control pin
         self._pinC = pyb.Pin (pin3, pyb.Pin.OUT_PP)
         self._pinC.high ()
@@ -41,9 +44,16 @@ class MotorDriver:
     def set_duty_cycle (self, level):
         #print ('Setting duty cycle to ' + str (level))
         
+        if (level + self._DEAD_ZONE) > 100 :
+            level -= self._DEAD_ZONE 
+        elif (level - self._DEAD_ZONE) < -100 :
+            level += self._DEAD_ZONE
+        
         if (level > 0) :
             self._ch2.pulse_width_percent (0)
-            self._ch1.pulse_width_percent (level)
+            print("pwm: " + str(level + self._DEAD_ZONE), end=" ")
+            self._ch1.pulse_width_percent (level + self._DEAD_ZONE)
         else:
             self._ch1.pulse_width_percent (0)
-            self._ch2.pulse_width_percent (-level)
+            print("pwm: " + str((-level) + self._DEAD_ZONE), end=" ")
+            self._ch2.pulse_width_percent ((-level) + self._DEAD_ZONE)

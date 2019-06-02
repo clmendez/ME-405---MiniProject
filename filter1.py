@@ -58,6 +58,7 @@ class Filter:
         self.gyro_total_x += gyro_delta
         rotation = self.get_x_rotation(self.acc.get_ax_int(), self.acc.get_ay_int(), self.acc.get_az_int())
         result  = self.K1 * ( self.last_x + gyro_delta) + (self.K * rotation)
+        print("x rotation: " + str(result))
         return result
 
     def updated_y(self):
