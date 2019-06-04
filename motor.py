@@ -1,29 +1,52 @@
+## @file motor.py
+#  Brief doc for motor.py
+#
+#  Detailed doc for motor.py 
+#
+#  @author Anthony Fortner, Claudia Mendez
+#
+#  @copyright License Info
+#
+#  @date June 4, 2019
+
+
+
 import pyb
 
+
+## 
+#
+#  This class implements a motor driver to control the direction and speed of a motor. 
+#
+#  @author Anthony Fortner, Claudia Mendez
+#  @date June 4, 2019
+
+
 class MotorDriver:
-    
-    ## pinA10 enable pin, set high to enable Motor Controller
-    
-    
+        
     ## Constructor for motor driver
     #
     #  Creates a motor driver by initializing GPIO
     #  pins and turning the motor off for safety.
+    #    
+    #   @param pin1 pyb.Pin.board.XXX pin object that connects to the forward control pin
+    #   @param pin2 pyb.Pin.board.XXX pin object that connects to the reverse control pin
+    #   @param pin3 pyb.Pin.board.XXX pin object that enables the motor
+    #   @param timer pyb.Timer object with channels that can interface with pin1, and pin2
     def __init__ (self, pin1, pin2, pin3, timer):
 
         print ('Creating a motor driver')
         
         self._DEAD_ZONE = 0
         
-        
-        ## pinB4 Motor Controller forward control pin
+        ## pinA Motor Controller forward control pin
         self._pinC = pyb.Pin (pin3, pyb.Pin.OUT_PP)
         self._pinC.high ()
         
-        
+        ## pinA Motor Controller forward control pin
         self._pinA = pyb.Pin (pin1, pyb.Pin.OUT_PP)
     
-        ## pinB5 Motor Controller reverse control pin
+        ## pinB Motor Controller reverse control pin
         self._pinB = pyb.Pin (pin2, pyb.Pin.OUT_PP)
         
         self._tim = timer
