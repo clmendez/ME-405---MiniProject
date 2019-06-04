@@ -18,7 +18,7 @@
    #  @subsection subsec_use Usage
    #  To use the motor driver the following format is used:
    #
-   #  motor.MotorDriver()
+   #  motor.MotorDriver(pin1, pin2, pin3, timer)
    #  
    #  Please see motor.MotorDriver for more parameter specifications for the motor driver. 
    #  
@@ -79,8 +79,69 @@
    #  There were no bugs in our code. As for limitations our driver is that you must
    #  frequently call calculate to get the actuation signal. 
    #
+   #  @section sec_IMU IMU Driver
+   #
+   #  @subsection subsec_pur Purpose 
+   #  The purpose of the IMU driver is to measure the acceleration and gyroscope of the IMU. 
+   #
+   #  @subsection subsec_use Usage
+   #  To use the IMU driver the following format is used:
+   #
+   #  acc.Acc(i2c, address, accel_range = 0)
+   #  
+   #  Please see acc.Acc for more parameter specifications for the IMU driver. 
+   #  
+   #  @subsection subsec_test Testing 
+   #  To test if the driver worked properly we created a main function that 
+   #  called created an acc class and used the function within that returned
+   #  the measured acclerations in g's. We moved the IMU in each direction (x-axis and y-axis)
+   #  to determine if they were being read correctly. 
+   #      
+   #  @subsection subsec_bug Bugs and Limitations 
+   #  There were no bugs in our code. As for limitations, our driver 
+   # 
+   #  @section sec_Filter Filter 
+   #
+   #  @subsection subsec_pur Purpose 
+   #  The purpose of the Filter class is to use the accelerations and gyroscopes measured by the IMU driver to determine the angle of the IMU. 
+   #
+   #  @subsection subsec_use Usage
+   #  To use the filter class the following format is used:
+   #
+   #  filter1.Filter(acc, K)
+   #  
+   #  Please see filter1.Filter for more parameter specifications for the Filter class. 
+   #  
+   #  @subsection subsec_test Testing 
+   #  To test if the filter class worked properly we created a main function that 
+   #  created a filter class and used the function within the class that returned the measured angle of the IMU.
+   #  We moved the IMU in each direction (x-axis and y-axis)to determine if they were being read correctly. 
+   #      
+   #  @subsection subsec_bug Bugs and Limitations 
+   #  There were no bugs in our code. As for limitations, our driver 
+   # 
+   #  @section sec_Sensor Sensor 
+   #
+   #  @subsection subsec_pur Purpose 
+   #  The purpose of the Sensor class is to measure distances that the sensors detect, so that the robot can avoid them. 
+   #
+   #  @subsection subsec_use Usage
+   #  To use the Sensor class the following format is used:
+   #
+   #  sensor.Sensor(pin1, pin2)
+   #  
+   #  Please see sensor.Sensor for more parameter specifications for the Filter class. 
+   #  
+   #  @subsection subsec_test Testing 
+   #  To test if the Sensor class worked properly we created a main function that 
+   #  created a sesnor class and used the function within the class that returned the distance of an object that the sensor detects.
+   #  We then made noises at a variety of distances to see if the sensor picked them up properly. 
+   #      
+   #  @subsection subsec_bug Bugs and Limitations 
+   #  There were no bugs in our code. As for limitations, our driver 
+   #
    #  @section sec_link GitHub Link
    #  To get access to all the code listed above please see the following link:
    #
-   #  https://github.com/anthony4tner/ME405-Lab01 
+   #  https://github.com/anthony4tner/ME405-MiniProject
 
