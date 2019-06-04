@@ -36,7 +36,7 @@ FORWARD = 1
 BACKWARD = 2
 TURNLEFT = 3
 TURNRIGHT = 4
-THETA_OFFSET = -3
+THETA_OFFSET = 0
 
 # Global shared variable
 FRONT_SENSOR = 0
@@ -51,7 +51,7 @@ TURNING_SET_POINT = 5
 def task_motor ():
     ''' Function which runs for Task 1, and controls how the motors will rotate.  '''
     
-    control = controller.Controller(5, 0, 0, BALANCE_SET_POINT)
+    control = controller.Controller(10, 0, 0, BALANCE_SET_POINT)
     
     motor1 = motor.MotorDriver(pyb.Pin.board.PB4,pyb.Pin.board.PB5, pyb.Pin.board.PA10, pyb.Timer(3))
     encoder1 = encoder.Encoder(pyb.Pin.board.PB7, pyb.Pin.board.PB6, pyb.Timer(4))
@@ -68,6 +68,7 @@ def task_motor ():
     while True:
         x_theta = (filter0.updated_x() + THETA_OFFSET)
         pwm = control.calculate(x_theta)
+        clear()
         
         if state == BALANCE :
             '''Include what will make this robot balance, accelo info and filters, motor duty cycle'''
@@ -286,6 +287,10 @@ def task_right_sensor ():
                 state = GATHER
             
         yield (state)
+
+def task_bluetooth ():
+    ''' Function which runs for Task 2, gives the robot commands based on user input.  '''
+
 
 def clear():
     print("\x1B\x5B2J", end="")
