@@ -157,9 +157,9 @@ class Acc:
     
     
     def __init__(self, i2c, address, accel_range = 0):
-        self.i2c = i2c
+        self._i2c = i2c
 
-        self.addr = address
+        self._addr = address
 
         # Request the WHO_AM_I device ID byte from the accelerometer
         self._dev_id = ord (i2c.mem_read (1, address, WHO_AM_I))
@@ -172,16 +172,16 @@ class Acc:
             raise ValueError ('Unknown accelerometer device ID ' 
                 + str (self._dev_id) + ' at I2C address ' + str(address))
             
-        self.i2c.mem_write(0x47, address,CTRL1_XL)
-        self.i2c.mem_write(0x80, address,CTRL4_C )
-        self.i2c.mem_write(0x4C, address,CTRL2_G )
+        self._i2c.mem_write(0x47, address,CTRL1_XL)
+        self._i2c.mem_write(0x80, address,CTRL4_C )
+        self._i2c.mem_write(0x4C, address,CTRL2_G )
             
         
     ## This method returns the X acceleration from the accelerometer in A/D bits
     #  @return The measured X acceleration in A/D conversion bits
             
     def get_ax_int (self):
-        byte_array = self.i2c.mem_read(2, self.addr, OUTX_L_XL)        
+        byte_array = self._i2c.mem_read(2, self._addr, OUTX_L_XL)        
         result = struct.unpack('<h', byte_array)
         return result[0]
     
@@ -189,7 +189,7 @@ class Acc:
     #  @return The measured Y acceleration in A/D conversion bits
     
     def get_ay_int (self):
-        byte_array = self.i2c.mem_read(2, self.addr, OUTY_L_XL)        
+        byte_array = self._i2c.mem_read(2, self._addr, OUTY_L_XL)        
         result = struct.unpack('<h', byte_array)
         return result[0]
     
@@ -197,13 +197,13 @@ class Acc:
     #  @return The measured Z acceleration in A/D conversion bits
 
     def get_az_int (self):
-        byte_array = self.i2c.mem_read(2, self.addr, OUTZ_L_XL)        
+        byte_array = self._i2c.mem_read(2, self._addr, OUTZ_L_XL)        
         result = struct.unpack('<h', byte_array)
         return result[0]
 
     ## This method returns the X acceleration from the accelerometer in g's, assuming
     #  that the accelerometer was correctly calibrated at the factory
-    #  @ return The measured X acceleration in g's
+    #  @return The measured X acceleration in g's
     
     def get_ax (self):
         return self.get_ax_int()/2035
@@ -211,7 +211,7 @@ class Acc:
 
     ## This method returns the Y acceleration from the accelerometer in g's, assuming
     #  that the accelerometer was correctly calibrated at the factory
-    #  @ return The measured Y acceleration in g's
+    #  @return The measured Y acceleration in g's
     
     def get_ay (self):
         return self.get_ay_int()/2030
@@ -219,7 +219,7 @@ class Acc:
 
     ## This method returns the Z acceleration from the accelerometer in g's, assuming
     #  that the accelerometer was correctly calibrated at the factory. 
-    #  @ return The measured Z acceleration in g's
+    #  @return The measured Z acceleration in g's
 
     def get_az (self):
         return self.get_az_int()/2040
@@ -228,7 +228,7 @@ class Acc:
     #  @return The measured X angular acceleration in A/D conversion bits
     
     def get_gx_int (self):
-        byte_array = self.i2c.mem_read(2, self.addr, OUTX_L_G)        
+        byte_array = self._i2c.mem_read(2, self._addr, OUTX_L_G)        
         result = struct.unpack('<h', byte_array)
         return result[0]
     
@@ -236,7 +236,7 @@ class Acc:
     #  @return The measured Y angular acceleration in A/D conversion bits
     
     def get_gy_int (self):
-        byte_array = self.i2c.mem_read(2, self.addr, OUTY_L_G)        
+        byte_array = self._i2c.mem_read(2, self._addr, OUTY_L_G)        
         result = struct.unpack('<h', byte_array)
         return result[0]
 
@@ -245,7 +245,7 @@ class Acc:
     #  @return The measured Z angular acceleration in A/D conversion bits
     
     def get_gz_int (self):
-        byte_array = self.i2c.mem_read(2, self.addr, OUTZ_L_G)        
+        byte_array = self._i2c.mem_read(2, self._addr, OUTZ_L_G)        
         result = struct.unpack('<h', byte_array)
         return result[0]
 
