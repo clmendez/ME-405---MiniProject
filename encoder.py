@@ -50,6 +50,7 @@ class Encoder:
         
     ## Gets the encoder's position 
     #    
+    #  @return Returns the current position of the encoder
     #  Output is in units of encoder ticks\n
     #  A positive value indicates a forward rotation\n
     #  A negative value indicates a reverse rotation
