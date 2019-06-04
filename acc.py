@@ -1,9 +1,13 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon May 20 20:30:58 2019
-
-@author: claud
-"""
+## @file acc.py
+#  Brief doc for acc.py
+#
+#  Detailed doc for acc.py 
+#
+#  @author Anthony Fortner, Claudia Mendez
+#
+#  @copyright License Info
+#
+#  @date June 4, 2019
 
 import micropython
 import struct
@@ -11,6 +15,14 @@ import struct
 import smbus
 import math
 import time
+
+
+## 
+#
+#  This class implements the IMU driver that measures the acceleration and gyroscope of the IMU. 
+#
+#  @author Anthony Fortner, Claudia Mendez
+#  @date June 4, 2019
 
 
 
@@ -135,15 +147,23 @@ OUTZ_H_XL  = micropython.const (0X2D)
 
 class Acc:
     
+    ## Constructor for IMU driver
+    #
+    #  Creates a IMU driver by initializing 
+    #    
+    #   @param i2c I2C object for communicating between the IMU and pyboard
+    #   @param address I2C address that the accelerometer is located at
+    #   @param accel_range
+    
+    
     def __init__(self, i2c, address, accel_range = 0):
-        ## The I2C driver which was created by the code which called this
         self.i2c = i2c
 
-        ## The I2C address at which the accelerometer is located
         self.addr = address
 
         # Request the WHO_AM_I device ID byte from the accelerometer
         self._dev_id = ord (i2c.mem_read (1, address, WHO_AM_I))
+        
         # The WHO_AM_I codes from MMA8451Q's and MMA8452Q's are recognized
         if self._dev_id == 0x69:
             self._works = True
@@ -156,127 +176,99 @@ class Acc:
         self.i2c.mem_write(0x80, address,CTRL4_C )
         self.i2c.mem_write(0x4C, address,CTRL2_G )
             
-        ## Accelerations
+        
+    ## This method returns the X acceleration from the accelerometer in A/D bits
+    #  @return The measured X acceleration in A/D conversion bits
             
     def get_ax_int (self):
-        """ Get the X acceleration from the accelerometer in A/D bits and 
-        return it.
-        @return The measured X acceleration in A/D conversion bits """
-
         byte_array = self.i2c.mem_read(2, self.addr, OUTX_L_XL)        
         result = struct.unpack('<h', byte_array)
         return result[0]
     
+    ## This method returns the Y acceleration from the accelerometer in A/D bits
+    #  @return The measured Y acceleration in A/D conversion bits
+    
     def get_ay_int (self):
-        """ Get the Y acceleration from the accelerometer in A/D bits and 
-        return it.
-        @return The measured Y acceleration in A/D conversion bits """
-
         byte_array = self.i2c.mem_read(2, self.addr, OUTY_L_XL)        
         result = struct.unpack('<h', byte_array)
         return result[0]
-
+    
+    ## This method returns the Z acceleration from the accelerometer in A/D bits
+    #  @return The measured Z acceleration in A/D conversion bits
 
     def get_az_int (self):
-        """ Get the Z acceleration from the accelerometer in A/D bits and 
-        return it.
-        @return The measured Z acceleration in A/D conversion bits """
-
         byte_array = self.i2c.mem_read(2, self.addr, OUTZ_L_XL)        
         result = struct.unpack('<h', byte_array)
         return result[0]
 
-
+    ## This method returns the X acceleration from the accelerometer in g's, assuming
+    #  that the accelerometer was correctly calibrated at the factory
+    #  @ return The measured X acceleration in g's
+    
     def get_ax (self):
-        """ Get the X acceleration from the accelerometer in g's, assuming
-        that the accelerometer was correctly calibrated at the factory.
-        @return The measured X acceleration in g's """
-
         return self.get_ax_int()/2035
 
 
+    ## This method returns the Y acceleration from the accelerometer in g's, assuming
+    #  that the accelerometer was correctly calibrated at the factory
+    #  @ return The measured Y acceleration in g's
+    
     def get_ay (self):
-        """ Get the Y acceleration from the accelerometer in g's, assuming
-        that the accelerometer was correctly calibrated at the factory. The
-        measurement is adjusted for the range (2g, 4g, or 8g) setting.
-        @return The measured Y acceleration in g's """
-
         return self.get_ay_int()/2030
 
 
-    def get_az (self):
-        """ Get the Z acceleration from the accelerometer in g's, assuming
-        that the accelerometer was correctly calibrated at the factory. The
-        measurement is adjusted for the range (2g, 4g, or 8g) setting.
-        @return The measured Z acceleration in g's """
+    ## This method returns the Z acceleration from the accelerometer in g's, assuming
+    #  that the accelerometer was correctly calibrated at the factory. 
+    #  @ return The measured Z acceleration in g's
 
+    def get_az (self):
         return self.get_az_int()/2040
     
-    
-
-
-    def get_accels (self):
-        """ Get all three accelerations from the MMA845x accelerometer. The
-        measurement is adjusted for the range (2g, 4g, or 8g) setting.
-        @return A tuple containing the X, Y, and Z accelerations in g's """
-
-        return (self.get_ax (), self.get_ay (), self.get_az ())
-        
-    
-    ## Gyro
+    ## Gets the X angular accelertion from the accelerometer in A/D bits.
+    #  @return The measured X angular acceleration in A/D conversion bits
     
     def get_gx_int (self):
-        """ Get the X angular acceleration from the accelerometer in A/D bits and 
-        return it.
-        @return The measured X acceleration in A/D conversion bits """
-
         byte_array = self.i2c.mem_read(2, self.addr, OUTX_L_G)        
         result = struct.unpack('<h', byte_array)
         return result[0]
     
+    ## Gets the Y angular accelertion from the accelerometer in A/D bits.
+    #  @return The measured Y angular acceleration in A/D conversion bits
+    
     def get_gy_int (self):
-        """ Get the Y acceleration from the accelerometer in A/D bits and 
-        return it.
-        @return The measured Y acceleration in A/D conversion bits """
-
         byte_array = self.i2c.mem_read(2, self.addr, OUTY_L_G)        
         result = struct.unpack('<h', byte_array)
         return result[0]
 
 
+    ## Gets the Z angular accelertion from the accelerometer in A/D bits.
+    #  @return The measured Z angular acceleration in A/D conversion bits
+    
     def get_gz_int (self):
-        """ Get the Z acceleration from the accelerometer in A/D bits and 
-        return it.
-        @return The measured Z acceleration in A/D conversion bits """
-
         byte_array = self.i2c.mem_read(2, self.addr, OUTZ_L_G)        
         result = struct.unpack('<h', byte_array)
         return result[0]
 
-
+    ## Gets the X angular accelertion from the accelerometer in g's, assuming that the 
+    #  accelerometer was correctly calibrated at the factory.
+    #  @return The measured X angular acceleration in g's
+    
     def get_gx (self):
-        """ Get the X acceleration from the accelerometer in g's, assuming
-        that the accelerometer was correctly calibrated at the factory.
-        @return The measured X acceleration in g's """
-
         return self.get_ax_int()/2035
 
 
-    def get_gy (self):
-        """ Get the Y acceleration from the accelerometer in g's, assuming
-        that the accelerometer was correctly calibrated at the factory. The
-        measurement is adjusted for the range (2g, 4g, or 8g) setting.
-        @return The measured Y acceleration in g's """
+    ## Gets the Y angular accelertion from the accelerometer in g's, assuming that the 
+    #  accelerometer was correctly calibrated at the factory.
+    #  @return The measured Y angular acceleration in g's
 
+    def get_gy (self):
         return self.get_ay_int()/2030
 
-
+    ## Gets the Z angular accelertion from the accelerometer in g's, assuming that the 
+    #  accelerometer was correctly calibrated at the factory.
+    #  @return The measured Z angular acceleration in g's
+    
     def get_gz (self):
-        """ Get the Z acceleration from the accelerometer in g's, assuming
-        that the accelerometer was correctly calibrated at the factory. The
-        measurement is adjusted for the range (2g, 4g, or 8g) setting.
-        @return The measured Z acceleration in g's """
-
         return self.get_az_int()/2040
     
           
