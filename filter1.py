@@ -1,107 +1,66 @@
-## @file filter1.py
-#  Brief doc for filter1.py
-#
-#  Detailed doc for filter1.py 
-#
-#  @author Anthony Fortner, Claudia Mendez
-#
-#  @copyright License Info
-#
-#  @date June 4, 2019
+# -*- coding: utf-8 -*-
+"""
+Created on Mon May 27 15:34:58 2019
+
+@author: claud
+"""
 
 import math
-import time
+import utime
+  # Complimentary Filter
+    
+#bus = smbus.SMBus(0)  # or bus = smbus.SMBus(1) for Revision 2 boards
 
-## 
-#
-#  This class implements the complimentary filter used to determine the angle of the IMU.
-#
-#  @author Anthony Fortner, Claudia Mendez
-#  @date June 4, 2019
+#bus.write_byte_data(address, power_mgmt_1, 0)
 
 class Filter:
     
-    ## Constructor for Filter class 
-    #
-    #  Creates a Filter class by initializing 
-    #    
-    #   @param acc Acc object for communicating between the IMU and pyboard
-    #   @param K 
-    
     def __init__(self, acc, K):
-        self._acc = acc
-        self._now = time.time()
-        self._K = K
-        self._K1 = 1 - self.K
-        self._time_diff = 0.01
-        self._gyro_x = acc.get_gx_int()
-        self._gyro_y = acc.get_gy_int()
-        self._gyro_z = acc.get_gz_int()
-        self._acc_x = acc.get_ax_int()
-        self._acc_y = acc.get_ay_int()
-        self._acc_z = acc.get_az_int()
+    
+        self.gyro_scale = 15000
+        self.tau = 0.075
+        self.a = 0
         
-        ##  The x-axis offset is the value of the gyroscope reading when it's not moving and is taken from the very first reading in the x-direction.
+    
+        self.acc = acc
+        self.gyro_x = (acc.get_gx_int() / self.gyro_scale)
+        self.acc_y = acc.get_ay_int()
+        self.acc_z = acc.get_az_int()
         self.gyro_offset_x = self.gyro_x
+        self.comp_result = self.get_x_rotation(self.acc_y, self.acc_z)
+        self.old_time = utime.ticks_ms()
         
-        ##  The y-axis offset is the value of the gyroscope reading when it's not moving and is taken from the very first reading in the y-direction.
-        self.gyro_offset_y = self.gyro_y
-        
-        ##  The z-axis offset is the value of the gyroscope reading when it's not moving and is taken from the very first reading in the z-direction.
-        self.gyro_offset_z = self.gyro_z
-        self._last_x = self.get_x_rotation(self.acc_x, self.acc_y, self.acc_z)
-        self._last_y = self.get_y_rotation(self.acc_x, self.acc_y, self.acc_z)
-        self._gyro_total_x = self.last_x - self.gyro_offset_x
-        self._gyro_total_y = self.last_y - self.gyro_offset_y
-        
-        
-    ## This method returns the distance between two locations. 
-    #  @return The distance between two locations. 
-    
-    def dist(self,a, b):
-        return math.sqrt((a * a) + (b * b))
-
-    ## This method 
-    #  @return
-
-    def get_y_rotation(self,x,y,z):
-        radians = math.atan2(x, self.dist(y,z))
-        return -math.degrees(radians)
-    
-    ## This method
-    #  @return
-
-    def get_x_rotation(self,x,y,z):
-        radians = math.atan2(y, self.dist(x,z))
+    def get_x_rotation(self, y, z):
+        radians = math.atan2(y, z)
         return math.degrees(radians)
     
-    ##  This method puts the IMU to sleep for a certain period of time. 
-    
-    def sleep (self):
-        return self.time.sleep(self._time_diff - 0.005)
-    
-    
-    ##  This method returns the current angle that the accelerometer is located in the X-axis
-    #   @return Current angle of the accelerometer in the X-axis
-    
     def updated_x(self):
-        gyro_scaled = self.acc.get_gx_int() - self.gyro_offset_x 
-        gyro_delta = gyro_scaled * self._time_diff
-        self._gyro_total_x += gyro_delta
-        rotation = self.get_x_rotation(self.acc.get_ax_int(), self.acc.get_ay_int(), self.acc.get_az_int())
-        result  = self._K1 * ( self._last_x + gyro_delta) + (self._K * rotation)
-        print("x rotation: " + str(result))
-        return result
+        # get scaled gyro measurment
+        gyro_scaled = (self.acc.get_gx_int() / self.gyro_scale) - self.gyro_offset_x 
+        
+        # get time difference for gyro integrator
+        self.new_time = utime.ticks_ms()
+        self.time_diff = self.new_time - self.old_time
+        self.old_time = self.new_time
+        
+        gyro_delta = (gyro_scaled * self.time_diff)
+        
+        # get accelerometer rotation
+        rotation = self.get_x_rotation(self.acc.get_ay_int(), self.acc.get_az_int())
+        
+        dtC = self.time_diff / 1000
+        self.a = self.tau / (self.tau + dtC)
+        self.comp_result = self.a*(self.comp_result + gyro_delta) + (1-self.a)*rotation
 
-    ##  This method returns the current angle that the accelerometer is located in the Y-axis
-    #   @return Current angle of the accelerometer in the Y-axis
-    
+        print("x comp: " + str(self.comp_result))
+        return self.comp_result
+
     def updated_y(self):
         gyro_scaled = self.acc.get_gy_int() - self.gyro_offset_y
-        gyro_delta = gyro_scaled * self._time_diff
-        self._gyro_total_y += gyro_delta
+        gyro_delta = gyro_scaled * self.time_diff
+        self.gyro_total_y += gyro_delta
         rotation = self.get_y_rotation(self.acc.get_ax_int(), self.acc.get_ay_int(), self.acc.get_az_int())
-        result  = self._K1 * ( self.last_y + gyro_delta) + (self._K * rotation)
+        result  = self.K1 * ( self.last_y + gyro_delta) + (self.K * rotation)
         return result
     
    
