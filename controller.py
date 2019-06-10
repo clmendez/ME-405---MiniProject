@@ -26,7 +26,9 @@ class Controller:
     
     ##  Constructor for controller driver
     #    
-    #   @param kp control gain 
+    #   @param kp porportional control gain 
+    #   @param kd differential control gain
+    #   @param ki intergal control gain
     #   @param setpoint desired location of the motor
 
     def __init__(self, kp, kd, ki, setpoint):
