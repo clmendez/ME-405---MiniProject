@@ -48,9 +48,10 @@ class Filter:
         # get accelerometer rotation
         rotation = self.get_x_rotation(self.acc.get_ay_int(), self.acc.get_az_int())
         
-        dtC = self.time_diff / 1000
-        self.a = self.tau / (self.tau + dtC)
-        self.comp_result = self.a*(self.comp_result + gyro_delta) + (1-self.a)*rotation
+        #dtC = self.time_diff / 1000
+        #self.a = self.tau / (self.tau + dtC)
+        #self.comp_result = self.a*(self.comp_result + gyro_delta) + (1-self.a)*rotation
+        self.comp_result = 0.99*(self.comp_result + gyro_delta) + (.01)*rotation
 
         print("x comp: " + str(self.comp_result))
         return self.comp_result
