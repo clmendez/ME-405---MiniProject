@@ -153,10 +153,10 @@ class Acc:
     #    
     #   @param i2c I2C object for communicating between the IMU and pyboard
     #   @param address I2C address that the accelerometer is located at
-    #   @param accel_range
+
     
     
-    def __init__(self, i2c, address, accel_range = 0):
+    def __init__(self, i2c, address):
         self._i2c = i2c
 
         self._addr = address
