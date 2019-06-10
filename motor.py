@@ -37,7 +37,7 @@ class MotorDriver:
 
         print ('Creating a motor driver')
         
-        self._DEAD_ZONE = 0
+        self._DEAD_ZONE = 5
         
         ## pinA Motor Controller forward control pin
         self._pinC = pyb.Pin (pin3, pyb.Pin.OUT_PP)
