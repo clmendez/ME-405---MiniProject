@@ -38,7 +38,11 @@ FORWARD = 1
 BACKWARD = 2
 TURNLEFT = 3
 TURNRIGHT = 4
+
 THETA_OFFSET = 0.5
+
+
+
 
 # Global shared variable
 FRONT_SENSOR = 0
@@ -58,7 +62,11 @@ TURNING_SET_POINT = 5
 def task_motor ():
     ''' Function which runs for Task 1, and controls how the motors will rotate.  '''
     
-    control = controller.Controller(6, 0, 0, BALANCE_SET_POINT)
+
+
+
+    control = controller.Controller(20, 50, .1, BALANCE_SET_POINT)
+
     
     motor1 = motor.MotorDriver(pyb.Pin.board.PB4,pyb.Pin.board.PB5, pyb.Pin.board.PA10, pyb.Timer(3))
     encoder1 = encoder.Encoder(pyb.Pin.board.PB7, pyb.Pin.board.PB6, pyb.Timer(4))
