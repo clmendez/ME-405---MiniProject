@@ -76,7 +76,7 @@ def task_motor ():
 
     aye = pyb.I2C(1, pyb.I2C.MASTER)
     accelo = acc.Acc (aye, 107)
-    filter0 = filter1.Filter(accelo, .98)
+    filter0 = filter1.Filter(accelo)
     
     state = BALANCE
     
@@ -91,18 +91,18 @@ def task_motor ():
             motor1.set_duty_cycle(pwm)
             motor2.set_duty_cycle(pwm)
             
-            if (BACK_SENSOR == 1 or BLUETOOTH_FORWARD == 1) :
+            if (BACK_SENSOR == 1 or BLUETOOTH == "Forward"):
                 ''' go forward'''
                 state = FORWARD
-            elif (FRONT_SENSOR == 1 or BLUETOOTH_BACKWARD == 1) :
+            elif (FRONT_SENSOR == 1 or BLUETOOTH == "Backward") :
                 ''' go backwards'''
         
                 state = BACKWARD
-            elif (RIGHT_SENSOR == 1 or BLUETOOTH_TURNLEFT == 1) :
+            elif (RIGHT_SENSOR == 1 or BLUETOOTH  == "TurnLeft") :
                 ''' turn left'''
 
                 state = TURNLEFT
-            elif (LEFT_SENSOR == 1 or BLUETOOTH_TURNRIGHT == 1) :
+            elif (LEFT_SENSOR == 1 or BLUETOOTH == "TurnRight") :
                 ''' Turn right'''
                 state = TURNRIGHT
                 
@@ -112,15 +112,15 @@ def task_motor ():
             motor1.set_duty_cycle(pwm)
             motor2.set_duty_cycle(pwm)
             
-            if (FRONT_SENSOR == 1 or BLUETOOTH_BACKWARD == 1) :
+            if (FRONT_SENSOR == 1 or BLUETOOTH == "Backward") :
                 ''' go backwards'''
                 state = BACKWARD
                 
-            elif (RIGHT_SENSOR == 1 or BLUETOOTH_TURNLEFT == 1):
+            elif (RIGHT_SENSOR == 1 or BLUETOOTH  == "TurnLeft"):
                 ''' turn left'''
                 state = TURNLEFT
                 
-            elif (LEFT_SENSOR == 1 or BLUETOOTH_TURNRIGHT == 1):
+            elif (LEFT_SENSOR == 1 or BLUETOOTH == "TurnRight"):
                 ''' Turn right'''
                 state = TURNRIGHT
                 
@@ -133,15 +133,15 @@ def task_motor ():
             motor1.set_duty_cycle(pwm)
             motor2.set_duty_cycle(pwm)
             
-            if (BACK_SENSOR == 1 or BLUETOOTH_FORWARD == 1):
+            if (BACK_SENSOR == 1 or BLUETOOTH == "Forward"):
                 ''' go forward'''
                 state = FORWARD
                 
-            elif (RIGHT_SENSOR == 1 or BLUETOOTH_TURNLEFT == 1):
+            elif (RIGHT_SENSOR == 1 or BLUETOOTH  == "TurnLeft"):
                 ''' turn left'''
                 state = TURNLEFT
                 
-            elif (LEFT_SENSOR == 1 or BLUETOOTH_TURNRIGHT == 1):
+            elif (LEFT_SENSOR == 1 or BLUETOOTH == "TurnRight"):
                 ''' Turn right'''
                 state = TURNRIGHT
                 
@@ -154,15 +154,15 @@ def task_motor ():
             motor1.set_duty_cycle(pwm)
             motor2.set_duty_cycle(pwm)
 
-            if (BACK_SENSOR == 1 or BLUETOOTH_FORWARD == 1):
+            if (BACK_SENSOR == 1 or BLUETOOTH == "Forward"):
                 ''' go forward'''
                 state = FORWARD
                 
-            elif (FRONT_SENSOR == 1 or BLUETOOTH_BACKWARD == 1):
+            elif (FRONT_SENSOR == 1 or BLUETOOTH == "Backward"):
                 ''' go backwards'''
                 state = BACKWARD
                 
-            elif (LEFT_SENSOR == 1 or BLUETOOTH_TURNRIGHT == 1):
+            elif (LEFT_SENSOR == 1 or BLUETOOTH == "TurnRight"):
                 ''' Turn right'''
                 state = TURNRIGHT
                 
@@ -175,15 +175,15 @@ def task_motor ():
             motor1.set_duty_cycle(pwm)
             motor2.set_duty_cycle(pwm)
 
-            if (BACK_SENSOR == 1 or BLUETOOTH_FORWARD == 1) :
+            if (BACK_SENSOR == 1 or BLUETOOTH == "Forward") :
                 ''' go forward'''
                 state = FORWARD
                 
-            elif (FRONT_SENSOR == 1 or BLUETOOTH_BACKWARD == 1) :
+            elif (FRONT_SENSOR == 1 or BLUETOOTH == "Backward") :
                 ''' go backwards'''               
                 state = BACKWARD
                 
-            elif (RIGHT_SENSOR == 1 or BLUETOOTH_TURNLEFT == 1) :
+            elif (RIGHT_SENSOR == 1 or BLUETOOTH  == "TurnLeft") :
                 ''' turn left'''
                 state = TURNLEFT
                 
@@ -304,17 +304,11 @@ def task_right_sensor ():
             
         yield (state)
 
-FORWARD = 1
-BACKWARD = 2
-TURNLEFT = 3
-TURNRIGHT = 4
 
 def task_bluetooth ():
     ''' Function which runs for Task 2, gives the robot commands based on user input.  '''
-    global BLUETOOTH_FORWARD
-    global BLUETOOTH_BACKWARD 
-    global BLUETOOTH_TURNLEFT
-    global BLUETOOTH_TURNRIGHT 
+
+    global BLUETOOTH
     
     #BlueTooth Set-up
 
@@ -328,76 +322,11 @@ def task_bluetooth ():
         
         if state == GATHER:
             ''' waiting for signal to appear '''
-            if uart.any() == 'forward':
-                state = FORWARD
-            elif uart.any() == 'backward':
-                state = BACKWARD
-            elif uart.any() == 'turnleft':
-                state = TURNLEFT
-            elif uart.any() == 'turnright':
-                state = TURNRIGHT
-                
-        elif state == FORWARD:
-            BLUETOOTH_FORWARD = 1
-            if uart.any() == 'forward':
-                state = FORWARD
-            elif uart.any() == 'backward':
-                state = BACKWARD
-            elif uart.any() == 'turnleft':
-                state = TURNLEFT
-            elif uart.any() == 'turnright':
-                state = TURNRIGHT
-            else:
-                BLUETOOTH_FORWARD = 0
-                state = GATHER
-                
-        elif state == BACKWARD:
-            BLUETOOTH_BACKWARD = 1
-            if uart.any() == 'forward':
-                state = FORWARD
-            elif uart.any() == 'backward':
-                state = BACKWARD
-            elif uart.any() == 'turnleft':
-                state = TURNLEFT
-            elif uart.any() == 'turnright':
-                state = TURNRIGHT
-            else:
-                BLUETOOTH_BACKWARD = 0
-                state = GATHER
-                
-        elif state == TURNLEFT:
-            BLUETOOTH_TURNLEFT = 1
-            if uart.any() == 'forward':
-                state = FORWARD
-            elif uart.any() == 'backward':
-                state = BACKWARD
-            elif uart.any() == 'turnleft':
-                state = TURNLEFT
-            elif uart.any() == 'turnright':
-                state = TURNRIGHT
-            else:
-                BLUETOOTH_TURNLEFT = 0
-                state = GATHER
-                
-        elif state == TURNRIGHT:
-            BLUETOOTH_TURNRIGHT = 1
-            if uart.any() == 'forward':
-                state = FORWARD
-            elif uart.any() == 'backward':
-                state = BACKWARD
-            elif uart.any() == 'turnleft':
-                state = TURNLEFT
-            elif uart.any() == 'turnright':
-                state = TURNRIGHT
-            else:
-                BLUETOOTH_TURNRIGHT = 0
-                state = GATHER
+            BLUETOOTH = pyb.repl_uart(uart)
             
-                
         yield (state)
                 
                 
-
 def clear():
     print("\x1B\x5B2J", end="")
     print("\x1B\x5BH", end="")
