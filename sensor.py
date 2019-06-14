@@ -20,8 +20,8 @@ class Sensor:
     #
     #  Creates a Sensor driver by initializing the pins required to interact with the ultrasonic sensor. 
     #    
-    #  @param pin1 pyb.Pin.board.XXX pin object that connects 
-    #  @param pin2 pyb.Pin.board.XXX pin object that connects
+    #  @param pin1 pyb.Pin.board.XXX pin object that connect to the Pyboard
+    #  @param pin2 pyb.Pin.board.XXX pin object that connect to the Pyboard
     
     def __init__(self, pin1, pin2):
         
