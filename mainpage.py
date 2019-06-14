@@ -29,7 +29,7 @@
    #    
    #    
    #  @subsection subsec_bug Bugs and Limitations 
-   #  There were no bugs in our code. As for limitations ,the set_duty_cycle function
+   #  There were no known bugs in our code. As for limitations ,the set_duty_cycle function
    #  of the motor can only be set in a range of -100 to 100. 
    #    
    #
@@ -52,7 +52,7 @@
    #  to test if the motor's position moved in the opposite direction, which it did. 
    #    
    #  @subsection subsec_bug Bugs and Limitations 
-   #  There were no bugs in our code. As for limitations our driver measurment is based on shortest movement on an integer ring mod 2^16\n
+   #  There were no known bugs in our code. As for limitations our driver measurment is based on shortest movement on an integer ring mod 2^16\n
    #  This means that the encoder needs to be measured at a frequency equal to:
    #
    #  freq = (target Rev/min) * (encoder ticks/revolution) * 5.09*10^-7
@@ -65,7 +65,7 @@
    #  @subsection subsec_use Usage
    #  To use the controller driver the following format is used:
    #
-   #  controller.Controller(kp, setpoint)
+   #  controller.Controller(kp,kd,ki, setpoint)
    #  
    #  Please see controller.Controller for more parameter specifications for the controller driver. 
    #  
@@ -76,8 +76,9 @@
    #  we checked to make sure a step response graph was produced with reasonable values.    
    #    
    #  @subsection subsec_bug Bugs and Limitations 
-   #  There were no bugs in our code. As for limitations our driver is that you must
-   #  frequently call calculate to get the actuation signal. 
+   #  There were no known bugs in our code. The integral portion of the control loop
+   #  never clears, which could lead to boundless corrections if the system is not properly
+   #  responding. 
    #
    #  @section sec_IMU IMU Driver
    #
@@ -98,7 +99,9 @@
    #  to determine if they were being read correctly. 
    #      
    #  @subsection subsec_bug Bugs and Limitations 
-   #  There were no bugs in our code. As for limitations, our driver 
+   #  There were no known bugs in our code. As for limitations, the readings received from 
+   #  the IMU could pick up noise which could result in the values being measured to be 
+   #  incorrect. This issue with noise is reduced with the use of the complimentary filter. 
    # 
    #  @section sec_Filter Filter 
    #
@@ -108,7 +111,7 @@
    #  @subsection subsec_use Usage
    #  To use the filter class the following format is used:
    #
-   #  filter1.Filter(acc, K)
+   #  filter1.Filter(acc)
    #  
    #  Please see filter1.Filter for more parameter specifications for the Filter class. 
    #  
@@ -118,7 +121,9 @@
    #  We moved the IMU in each direction (x-axis and y-axis)to determine if they were being read correctly. 
    #      
    #  @subsection subsec_bug Bugs and Limitations 
-   #  There were no bugs in our code. As for limitations, our driver 
+   #  There were no known bugs in our code. As for limitations, the complimentary filter 
+   #  is nonideal compared to the kalamin filter. 
+   #  
    # 
    #  @section sec_Sensor Sensor 
    #
@@ -130,7 +135,7 @@
    #
    #  sensor.Sensor(pin1, pin2)
    #  
-   #  Please see sensor.Sensor for more parameter specifications for the Filter class. 
+   #  Please see sensor.Sensor for more parameter specifications for the Sensor class. 
    #  
    #  @subsection subsec_test Testing 
    #  To test if the Sensor class worked properly we created a main function that 
@@ -138,10 +143,26 @@
    #  We then made noises at a variety of distances to see if the sensor picked them up properly. 
    #      
    #  @subsection subsec_bug Bugs and Limitations 
-   #  There were no bugs in our code. As for limitations, our driver 
+   #  There were no known bugs in our code. As for limitations, the sensor can 
+   #  pick up noise that isn't really there, which could result in the robot thinking
+   #  it needs to move when it really doesn't. 
+   #
+   #  @section sec_main Main 
+   #
+   #  @subsection subsec_pur Purpose 
+   #  The purpose of the main is to initialize all the tasks, which makes the robot balance. 
+   #  It is bringing together all of the classes and seeing how they all work together. 
+   #
+   #  @subsection subsec_test Testing 
+   #  To test the main we created tasks that made the classes. The three tasks that were
+   #  made were a motor, sensor, and bluetooth task. We ran the tasks in a schedule to 
+   #  see how the robot interacted.
+   #  
+   #  @subsection subsec_bug Bugs and Limitations 
+   #  There were no known bugs in our code. Limitations are unknown. 
    #
    #  @section sec_link GitHub Link
    #  To get access to all the code listed above please see the following link:
    #
-   #  https://github.com/anthony4tner/ME405-MiniProject
+   #  https://github.com/clmendez/ME-405---MiniProject
 
